@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-FamilygroupApplication<familygroup>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.familygroup.familygroup.FamilygroupApplication",
+            "projectName": "familygroup",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
