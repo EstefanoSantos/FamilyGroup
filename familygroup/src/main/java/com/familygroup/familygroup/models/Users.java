@@ -1,6 +1,9 @@
-package com.models;
+package com.familygroup.familygroup.models;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -46,7 +49,13 @@ public class Users {
     foreignKey = @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT))
     
     )
-    List<Role> roles;
+    List<Role> roles = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "user_group",
+    joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    Set<Group> groups = new HashSet<>();
 
 
     public String getUsername() {
