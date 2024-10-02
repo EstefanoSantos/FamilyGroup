@@ -19,6 +19,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "users")
@@ -29,12 +31,15 @@ public class Users {
     @GeneratedValue(generator = "seq_users", strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @NotBlank @NotNull
     @Column(nullable = false, unique = true)
     private String username;
 
+    @NotBlank @NotNull
     @Column(nullable = false)
     private String email;
 
+    @NotNull
     @Column(nullable = false)
     private String password;
 

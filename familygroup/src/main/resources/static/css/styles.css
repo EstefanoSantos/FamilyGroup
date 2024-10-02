@@ -13,3 +13,13 @@ body {
    gap: 50%;
    
 }
+
+.main {
+	padding: 0px 10px;
+}
+
+@media screen and (max-width: 450px) {
+	.login-form {
+		margin-top: 10%;
+	}
+}
