@@ -1,0 +1,53 @@
+<!DOCTYPE >
+
+<html html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Family Group</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+    </head>
+    <body>
+
+            <div class="wrapper-form">
+                <form th:action="@{/newUser}" th:object="${user}" method="post">
+
+                    <div class="form-group">
+                        <div class="col-md-6 row justify-content-center">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" aria-describedby="usernameHelp" 
+                            placeholder="Enter username" th:field="*{username}">
+                        </div>
+                        
+                    </div>
+        
+                    <div class="form-group">
+                        <div class="col-md-6 row justify-content-center">
+                            <label for="email">Email address</label>
+                            <input type="email" class="form-control" aria-describedby="emailHelp" 
+                            placeholder="Enter email" th:field="*{email}">
+                        </div>
+                      
+                    </div>
+        
+                    <div class="form-group">
+                        <div class="col-md-6 row justify-content-center">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" 
+                            placeholder="Password" th:field="*{password}">
+                        </div>              
+                    </div>
+        
+                    <div class="form-group form-check">
+                      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+            </div>    
+       
+    </body>
+</html>

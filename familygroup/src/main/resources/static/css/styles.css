@@ -1,0 +1,15 @@
+body {
+
+    background-color: lightgrey;
+    margin-top: 15%;
+    margin-left: 25%;
+    margin-right: 25%;
+}
+
+.wrapper-form {
+    display: grid;
+   margin-left: 20%;
+   margin-right: 10%;
+   gap: 50%;
+   
+}
