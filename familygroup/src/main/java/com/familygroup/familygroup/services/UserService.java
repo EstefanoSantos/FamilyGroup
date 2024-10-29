@@ -4,13 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+
+import com.familygroup.familygroup.exceptions.CustomException;
 import com.familygroup.familygroup.models.Role;
 import com.familygroup.familygroup.models.Users;
 import com.familygroup.familygroup.models.dtos.UsersDto;
 import com.familygroup.familygroup.repositories.RoleRepository;
 import com.familygroup.familygroup.repositories.UserRepository;
 
-import jakarta.persistence.EntityExistsException;
 
 @Service
 public class UserService {
@@ -21,40 +22,69 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public void createUser(UsersDto  userDto) {
+    public void createUser(UsersDto  userDto) throws CustomException {
 
-        boolean isUser = userRepository.isUsername(userDto.getUsername());
+            boolean isUser = userRepository.isUsername(userDto.username());
 
-        if (isUser == true) {
-            throw new EntityExistsException("Username's already in use.");
-        }
+            if (isUser == true) {
+                throw new CustomException("Username's already in use.");
+            }
 
-        Users user = new Users();
+            var user = mapToUser(userDto);
 
-        user.setUsername(userDto.getUsername());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
-
-        Role role = roleRepository.findUserRoleByName();
-        user.setRoles(Arrays.asList(role));
-
-        userRepository.save(user);
+            Role role = roleRepository.findUserRoleByName();
+            user.setRoles(Arrays.asList(role));
+    
+            userRepository.save(user); 
        
     }
 
-    public Users findUserByUsername(String username, String password) {
+    public UsersDto findUserByUsername(String username) throws CustomException {
 
         Users user = userRepository.findUserByUsername(username);
-        
+
         if (user == null) {
-            return null;
+            throw new CustomException("User not found");
         }
 
-        if (!user.getPassword().equals(password)) {
-            return null;
+        UsersDto dto = mapToDto(user);
+
+        return dto;
+    }
+
+    public void deleteUser(Long id) throws CustomException {
+
+        boolean isUser = userRepository.existsById(id);
+
+        if (isUser  == false) {
+            throw new CustomException("There's no user with the given id.");
         }
+
+        userRepository.deleteById(id);
+
+    }
+
+    public Users mapToUser(UsersDto dto) {
+
+        Users user = new Users();
+
+        user.setUsername(dto.username());
+        user.setEmail(dto.email());
+        user.setPassword(dto.password());
 
         return user;
+    }
+
+    public UsersDto mapToDto(Users user) {
+
+        UsersDto dto = new UsersDto(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getPassword()
+            );
+
+        return dto;
     }
     
 }
