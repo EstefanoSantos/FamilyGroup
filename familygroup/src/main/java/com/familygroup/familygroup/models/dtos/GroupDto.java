@@ -9,7 +9,7 @@ public record GroupDto(
 
     String groupDescription,
 
-    Long createBy,
+    Long createdBy,
 
     Set<Long> users
     

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.familygroup.familygroup.exceptions.CustomException;
-import com.familygroup.familygroup.models.Group;
+import com.familygroup.familygroup.models.dtos.GroupDto;
 import com.familygroup.familygroup.services.GroupService;
 
 @RestController
@@ -19,14 +19,9 @@ public class GroupController {
     private GroupService groupService;
 
     @PostMapping("/createGroup")
-    public ResponseEntity<String> createGroup(@RequestBody Group group) throws CustomException {
+    public ResponseEntity<String> createGroup(@RequestBody GroupDto dto) throws CustomException {
 
-        if (group.getCreatedBy() == null || group.getCreatedBy().getId() == null) {
-            throw new CustomException("Creator ID must be provided.");
-        }
-        
-
-        groupService.createGroup(group);
+        groupService.createGroup(dto);
 
         return ResponseEntity.ok("Group created!");
     }
