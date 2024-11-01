@@ -36,6 +36,11 @@ public class TaskService {
         Group group = groupRepository.findById(dto.groupId())
         .orElseThrow(() -> new CustomException("Group with id " + dto.groupId() + " not found"));
 
+        if (!taskRepository.isUserPartOfGroup(group.getId(), user.getId())) {
+            throw new 
+            CustomException("User with id " + user.getId() + " is not part of group with id " + group.getId());
+        }
+
         Task task = new Task();
 
         task.setTaskName(dto.taskName());
