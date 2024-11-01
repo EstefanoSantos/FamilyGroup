@@ -2,6 +2,11 @@ package com.familygroup.familygroup.models;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -39,7 +44,7 @@ public class Group implements Serializable {
     name = "created_by_fk"))
     private Users createdBy;
 
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Users> users = new HashSet<>();
 
     public Long getId() {

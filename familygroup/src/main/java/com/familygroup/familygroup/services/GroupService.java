@@ -9,6 +9,9 @@ import com.familygroup.familygroup.models.Users;
 import com.familygroup.familygroup.models.dtos.GroupDto;
 import com.familygroup.familygroup.repositories.GroupRepository;
 import com.familygroup.familygroup.repositories.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import java.util.Set;
 import java.util.HashSet;
 
@@ -23,12 +26,31 @@ public class GroupService {
 
     public void createGroup(GroupDto dto) throws CustomException {
 
-       Group group = mapToNewGroup(dto);
+       Group group = mapToGroup(dto);
 
        groupRepository.save(group);
     }
 
-    public Group mapToNewGroup(GroupDto dto) throws CustomException{
+    public GroupDto getGroupById(Long id) throws CustomException {
+
+        Group group = groupRepository.findById(id)
+        .orElseThrow(() -> new CustomException("Group cannot be found."));
+
+        return mapToGroupDto(group);
+    }
+
+    @Transactional
+    public void deleteGroupById(Long id) throws CustomException {
+
+        Group group = groupRepository.findById(id)
+        .orElseThrow(()-> new CustomException("Cannot found group with the given id"));
+
+        group.getUsers().forEach(user -> user.getGroups().remove(group));
+
+        groupRepository.delete(group);
+    }
+
+    public Group mapToGroup(GroupDto dto) throws CustomException{
 
         Group group = new Group();
 
@@ -56,5 +78,22 @@ public class GroupService {
 
             return group;
 
+    }
+
+    public GroupDto mapToGroupDto(Group group) {
+
+        Set<Long> groupMembers = new HashSet<>();
+
+        for (Users member : group.getUsers()) {
+            groupMembers.add(member.getId());
+        }
+
+        GroupDto dto = new GroupDto(group.getId(),
+        group.getGroupName(),
+        group.getGroupDescription(), 
+        group.getCreatedBy().getId(), 
+        groupMembers);
+
+        return dto;
     }
 }
