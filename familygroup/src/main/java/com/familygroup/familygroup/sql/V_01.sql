@@ -1,0 +1,2 @@
+ALTER TABLE task              
+ALTER COLUMN creation_time SET DATA TYPE TIMESTAMP WITH TIME ZONE;

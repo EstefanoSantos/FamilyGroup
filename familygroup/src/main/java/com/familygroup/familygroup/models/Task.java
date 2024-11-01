@@ -1,6 +1,7 @@
 package com.familygroup.familygroup.models;
 
 import java.sql.Date;
+import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -30,9 +31,9 @@ public class Task {
     private String taskDescription;
 
     @Column(nullable = false)
-    private Date creationTime;
+    private OffsetDateTime creationTime;
 
-    private Date finishedAt;
+    private OffsetDateTime finishedAt;
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT,
@@ -68,19 +69,19 @@ public class Task {
         this.taskDescription = taskDescription;
     }
 
-    public Date getCreationTime() {
+    public OffsetDateTime getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(Date creationTime) {
+    public void setCreationTime(OffsetDateTime creationTime) {
         this.creationTime = creationTime;
     }
 
-    public Date getFinishedAt() {
+    public OffsetDateTime getFinishedAt() {
         return finishedAt;
     }
 
-    public void setFinishedAt(Date finishedAt) {
+    public void setFinishedAt(OffsetDateTime finishedAt) {
         this.finishedAt = finishedAt;
     }
 
