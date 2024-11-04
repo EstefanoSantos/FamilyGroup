@@ -29,7 +29,6 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
 
-
     public void createGroupTask(TaskDto dto) throws CustomException {
 
         Users user = userRepository.findById(dto.userId())
@@ -58,7 +57,7 @@ public class TaskService {
         
         List<Task> tasks = taskRepository.getTasksByGroup(groupId);
 
-        if (tasks == null) {
+        if (tasks.isEmpty()) {
             throw new CustomException("Group with id " + groupId + " was not found.");
         }
 
@@ -69,6 +68,19 @@ public class TaskService {
         }
 
         return dtos;
+    }
+
+    public void setTaskDone(Long groupId, Long taskId) throws CustomException {
+
+        OffsetDateTime isTaskFinished = taskRepository.isTaskDone(groupId, taskId);
+
+        if (isTaskFinished != null) {
+            throw new CustomException("Task is already done.");
+        }
+
+        OffsetDateTime instance = OffsetDateTime.now();
+
+        taskRepository.setTaskDone(instance, groupId, taskId);
     }
 
     private TaskDto mapToTaskDto(Task task) {
@@ -85,4 +97,5 @@ public class TaskService {
 
             return dto;
     }
+
 }
