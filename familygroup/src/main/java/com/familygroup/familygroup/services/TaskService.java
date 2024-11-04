@@ -83,6 +83,17 @@ public class TaskService {
         taskRepository.setTaskDone(instance, groupId, taskId);
     }
 
+    public void deleteTask(Long groupId, Long userId, Long taskId) throws CustomException {
+
+        boolean isUsersTask = taskRepository.isUsersTask(groupId, userId, taskId);
+
+        if (isUsersTask == false) {
+            throw new CustomException("Task was not found.");
+        }
+
+        taskRepository.deleteById(taskId);
+    }
+
     private TaskDto mapToTaskDto(Task task) {
 
         TaskDto dto = new TaskDto(

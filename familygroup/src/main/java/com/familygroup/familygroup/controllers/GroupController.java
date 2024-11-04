@@ -38,10 +38,11 @@ public class GroupController {
         return new ResponseEntity<GroupDto>(dto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable("id") Long id) throws CustomException {
+    @DeleteMapping("/deleteById/{groupId}/{created_by}")
+    public ResponseEntity<String> deleteById(@PathVariable("groupId") Long groupId,
+     @PathVariable("created_by") Long createdBy) throws CustomException {
 
-        groupService.deleteGroupById(id);
+        groupService.deleteGroupById(groupId, createdBy);
 
         return ResponseEntity.ok("Group deleted!");
     }

@@ -40,10 +40,13 @@ public class GroupService {
     }
 
     @Transactional
-    public void deleteGroupById(Long id) throws CustomException {
+    public void deleteGroupById(Long groupId, Long createdBy) throws CustomException {
 
-        Group group = groupRepository.findById(id)
-        .orElseThrow(()-> new CustomException("Cannot found group with the given id"));
+        Group group = groupRepository.isGroupOwner(groupId, createdBy);
+
+        if (group == null) {
+            throw new CustomException("Group was not found.");
+        }
 
         group.getUsers().forEach(user -> user.getGroups().remove(group));
 

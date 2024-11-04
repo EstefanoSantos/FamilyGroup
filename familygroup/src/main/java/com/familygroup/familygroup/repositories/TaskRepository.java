@@ -32,4 +32,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(nativeQuery = true,
     value = "update task set finished_at = ?1 where group_id = ?2 and id = ?3;")
     public void setTaskDone(OffsetDateTime instance, Long groupdId, Long taskId);
+
+    @Query(nativeQuery = true,
+    value = "select exists(select 1 from task where group_id = ?1 and created_by = ?2 and id = ?3);")
+    public boolean isUsersTask(Long groupId, Long createdBy, Long taskId);
 }
