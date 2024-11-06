@@ -3,6 +3,9 @@ package com.familygroup.familygroup.models;
 import java.sql.Date;
 import java.time.OffsetDateTime;
 
+import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.TimeZoneStorageType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -31,8 +34,10 @@ public class Task {
     private String taskDescription;
 
     @Column(nullable = false)
+    @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     private OffsetDateTime creationTime;
 
+    @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     private OffsetDateTime finishedAt;
 
     @ManyToOne

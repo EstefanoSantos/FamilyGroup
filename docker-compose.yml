@@ -1,0 +1,20 @@
+
+services:
+  postgres-db:
+    image: postgres:15
+    restart: always
+    ports:
+    - "5432:5432"
+    environment:
+      - POSTGRES_DB=family
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+  
+  spring-app:
+    image: familygroup:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/family
+    depends_on:
+      - postgres-db
