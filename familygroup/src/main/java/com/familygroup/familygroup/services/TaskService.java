@@ -54,11 +54,17 @@ public class TaskService {
     }
 
     public List<TaskDto> getTasksByGroup(Long groupId) throws CustomException {
+
+        boolean group = groupRepository.existsById(groupId);
+
+        if (group == false) {
+            throw new CustomException("Group with id " + groupId + " was not found.");
+        }
         
         List<Task> tasks = taskRepository.getTasksByGroup(groupId);
 
         if (tasks.isEmpty()) {
-            throw new CustomException("Group with id " + groupId + " was not found.");
+            throw new CustomException("There is no tasks associated with the group.");
         }
 
         List<TaskDto> dtos = new ArrayList<>();
