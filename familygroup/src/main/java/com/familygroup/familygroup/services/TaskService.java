@@ -30,19 +30,25 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
 
+    //create new task associated with a user and group
+
     public void createGroupTask(TaskDto dto) throws CustomException {
 
+        //check if is a valid user
         Users user = userRepository.findById(dto.userId())
         .orElseThrow(() -> new CustomException("User with id " + dto.userId() + " not found."));
 
+        //check if is a valid group
         Group group = groupRepository.findById(dto.groupId())
         .orElseThrow(() -> new CustomException("Group with id " + dto.groupId() + " not found"));
 
+        //Throws exception if user is not associated with the group
         if (!taskRepository.isUserPartOfGroup(group.getId(), user.getId())) {
             throw new 
             CustomException("User with id " + user.getId() + " is not part of group with id " + group.getId());
         }
 
+        //mapping dto to Task
         Task task = new Task();
 
         task.setTaskName(dto.taskName());
@@ -51,23 +57,29 @@ public class TaskService {
         task.setCreatedBy(user);
         task.setGroupId(group);
 
+        //saves new task
         taskRepository.save(task);
     }
 
+
+    //Bring tasks associated with some group
     public List<TaskDto> getTasksByGroup(Long groupId) throws CustomException {
 
+        //check if is a valid group
         boolean group = groupRepository.existsById(groupId);
 
         if (group == false) {
             throw new CustomException("Group with id " + groupId + " was not found.");
         }
         
+        //Tries to get group tasks otherwise throws exception
         List<Task> tasks = taskRepository.getTasksByGroup(groupId);
 
         if (tasks.isEmpty()) {
             throw new CustomException("There is no tasks associated with the group.");
         }
 
+        //map tasks to dto
         List<TaskDto> dtos = new ArrayList<>();
 
         for(Task task :  tasks) {
@@ -77,20 +89,24 @@ public class TaskService {
         return dtos;
     }
 
+    //Finish some task
     public void setTaskDone(Long groupId, Long taskId, Long userId) throws CustomException {
 
+        //check if group exists
         boolean group = groupRepository.existsById(groupId);
 
         if (group == false) {
             throw new CustomException("Group with id " + groupId + " was not found.");
         }
 
+        //check if task was created from both user and group
         boolean isUserTask = taskRepository.isUsersTask(groupId, taskId, userId);
 
         if (isUserTask == false) {
             throw new CustomException("User task not found.");
         }
 
+        //here we check if task is finished by finished_at field at database
         Instant isTaskFinished = taskRepository.isTaskDone(groupId, taskId);
 
         if (isTaskFinished != null) {
@@ -98,21 +114,25 @@ public class TaskService {
         } 
 
         OffsetDateTime instance = OffsetDateTime.now();
-
+        
+        //set task as done
         taskRepository.setTaskDone(instance, groupId, taskId);
     }
 
+    //Delete task from group relation
     public void deleteTask(Long groupId, Long userId, Long taskId) throws CustomException {
+        
+        //check if task was created from both user and group
+        boolean isUserTask = taskRepository.isUsersTask(groupId, taskId, userId);
 
-        boolean isUsersTask = taskRepository.isUsersTask(groupId, userId, taskId);
-
-        if (isUsersTask == false) {
+        if (isUserTask == false) {
             throw new CustomException("Task was not found.");
         }
 
         taskRepository.deleteById(taskId);
     }
 
+    //Map a Task class to TaskDto
     private TaskDto mapToTaskDto(Task task) {
 
         TaskDto dto = new TaskDto(
