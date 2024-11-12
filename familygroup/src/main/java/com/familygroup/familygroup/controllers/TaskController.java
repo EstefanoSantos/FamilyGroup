@@ -41,11 +41,12 @@ public class TaskController {
         
     }
 
-    @PostMapping("/setTaskDone/{group_id}/{task_id}")
-    public ResponseEntity<String> setTaskDone(@PathVariable("group_id") Long groupId, @PathVariable("task_id") Long taskId)
+    @PostMapping("/setTaskDone/{group_id}/{task_id}/{user_id}")
+    public ResponseEntity<String> setTaskDone(@PathVariable("group_id") Long groupId, @PathVariable("task_id") Long taskId
+    , @PathVariable("user_id") Long userId)
     throws CustomException {
 
-        taskService.setTaskDone(groupId, taskId);
+        taskService.setTaskDone(groupId, taskId, userId);
 
         return ResponseEntity.ok("Task finished!");
     }

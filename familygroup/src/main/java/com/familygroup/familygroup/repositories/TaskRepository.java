@@ -1,5 +1,6 @@
 package com.familygroup.familygroup.repositories;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(nativeQuery = true,
     value = "select (finished_at) from task where group_id = ?1 and id = ?2;")
-    public OffsetDateTime isTaskDone(Long groupId, Long taskId);
+    public Instant isTaskDone(Long groupId, Long taskId);
 
     @Modifying
     @Query(nativeQuery = true,
@@ -34,6 +35,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     public void setTaskDone(OffsetDateTime instance, Long groupdId, Long taskId);
 
     @Query(nativeQuery = true,
-    value = "select exists(select 1 from task where group_id = ?1 and created_by = ?2 and id = ?3);")
-    public boolean isUsersTask(Long groupId, Long createdBy, Long taskId);
+    value = "select exists(select 1 from task where group_id = ?1 and id = ?2 and created_by = ?3);")
+    public boolean isUsersTask(Long groupId, Long taskId, Long userId);
 }

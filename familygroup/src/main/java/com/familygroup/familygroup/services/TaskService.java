@@ -1,5 +1,6 @@
 package com.familygroup.familygroup.services;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -76,13 +77,25 @@ public class TaskService {
         return dtos;
     }
 
-    public void setTaskDone(Long groupId, Long taskId) throws CustomException {
+    public void setTaskDone(Long groupId, Long taskId, Long userId) throws CustomException {
 
-        OffsetDateTime isTaskFinished = taskRepository.isTaskDone(groupId, taskId);
+        boolean group = groupRepository.existsById(groupId);
+
+        if (group == false) {
+            throw new CustomException("Group with id " + groupId + " was not found.");
+        }
+
+        boolean isUserTask = taskRepository.isUsersTask(groupId, taskId, userId);
+
+        if (isUserTask == false) {
+            throw new CustomException("User task not found.");
+        }
+
+        Instant isTaskFinished = taskRepository.isTaskDone(groupId, taskId);
 
         if (isTaskFinished != null) {
             throw new CustomException("Task is already done.");
-        }
+        } 
 
         OffsetDateTime instance = OffsetDateTime.now();
 
