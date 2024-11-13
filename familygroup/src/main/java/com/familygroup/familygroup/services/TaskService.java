@@ -31,7 +31,6 @@ public class TaskService {
     private UserRepository userRepository;
 
     //create new task associated with a user and group
-
     public void createGroupTask(TaskDto dto) throws CustomException {
 
         //check if is a valid user

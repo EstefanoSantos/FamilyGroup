@@ -53,7 +53,7 @@ public class GroupService {
         groupRepository.delete(group);
     }
 
-    public Group mapToGroup(GroupDto dto) throws CustomException{
+    private Group mapToGroup(GroupDto dto) throws CustomException{
 
         Group group = new Group();
 
@@ -64,6 +64,10 @@ public class GroupService {
             .orElseThrow(() -> new CustomException("User not found with id " + dto.createdBy()));
 
             group.setCreatedBy(creator);
+
+            group.getUsers().add(creator);
+
+            creator.getGroups().add(group);
 
             Set<Users> groupMembers = new HashSet<>();
 
@@ -83,7 +87,7 @@ public class GroupService {
 
     }
 
-    public GroupDto mapToGroupDto(Group group) {
+    private GroupDto mapToGroupDto(Group group) {
 
         Set<Long> groupMembers = new HashSet<>();
 
