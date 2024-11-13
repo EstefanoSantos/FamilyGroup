@@ -24,6 +24,7 @@ public class GroupService {
     @Autowired
     private UserRepository userRepository;
 
+    //creates a new group
     public void createGroup(GroupDto dto) throws CustomException {
 
        Group group = mapToGroup(dto);
@@ -31,28 +32,34 @@ public class GroupService {
        groupRepository.save(group);
     }
 
+    //Find a group by id
     public GroupDto getGroupById(Long id) throws CustomException {
 
+        //check if is a valid group
         Group group = groupRepository.findById(id)
         .orElseThrow(() -> new CustomException("Group cannot be found."));
 
         return mapToGroupDto(group);
     }
 
+    //delete group by id
     @Transactional
     public void deleteGroupById(Long groupId, Long createdBy) throws CustomException {
 
+        //check if group exists and user own it
         Group group = groupRepository.isGroupOwner(groupId, createdBy);
 
         if (group == null) {
             throw new CustomException("Group was not found.");
         }
 
+        //remove users from group before deleting it
         group.getUsers().forEach(user -> user.getGroups().remove(group));
 
         groupRepository.delete(group);
     }
 
+    //Maps Dto to Group class 
     private Group mapToGroup(GroupDto dto) throws CustomException{
 
         Group group = new Group();
@@ -60,15 +67,21 @@ public class GroupService {
             group.setGroupName(dto.groupName());
             group.setGroupDescription(dto.groupDescription());
         
+            //check if group creator user exists
             Users creator = userRepository.findById(dto.createdBy())
             .orElseThrow(() -> new CustomException("User not found with id " + dto.createdBy()));
 
+            //set user found in the field created_by as the group creator
             group.setCreatedBy(creator);
 
+            //add group creator to Set of users in the group
             group.getUsers().add(creator);
 
+            //add group to to Set of groups in user
             creator.getGroups().add(group);
 
+            /*gets each individual user that might be send in http post request
+             * and add to the group */
             Set<Users> groupMembers = new HashSet<>();
 
             for (Long memberId: dto.users()) {
@@ -87,6 +100,7 @@ public class GroupService {
 
     }
 
+    //map Group to GroupDto
     private GroupDto mapToGroupDto(Group group) {
 
         Set<Long> groupMembers = new HashSet<>();
