@@ -44,20 +44,24 @@ public class GroupService {
         return mapToGroupDto(group);
     }
 
+    //Get user's group
     public List<GroupDto> getGroupsByUser(Long userId) throws CustomException {
 
+        //check if user exists
         boolean isUser = userRepository.existsById(userId);
 
         if (isUser  == false) {
             throw new CustomException("There's no user with the given id.");
         }
 
+        //Try to retrive data from groups table
         List<Group> groups = groupRepository.getGroupsByUser(userId);
 
         if (groups.isEmpty()) {
             throw new CustomException("User's groups not found");
         }
 
+        //Maps a list of groups to groupsDto
         return mapToGroupsDto(groups);
 
     } 
@@ -138,27 +142,35 @@ public class GroupService {
         return dto;
     }
 
+    //Receives a list of groups and maps to DTO objects
     private List<GroupDto> mapToGroupsDto(List<Group> groups) {
 
         List<GroupDto> dtos = new ArrayList<>();
-
+        
+        //Iterates through each group and map it to GroupDto 
         for (Group group : groups) {
 
+            //Each group have a set of users that makes part of it
+            //Here we iterate through each user id and add it to the set
             Set<Long> groupMembers = new HashSet<>();
             
             for (Users member : group.getUsers()) {
                 groupMembers.add(member.getId());
             }
- 
+            
+            //Now we take group field and maps to Dto
+            //The set previously created is added to the dto set users attribute
             GroupDto dto = new GroupDto(group.getId(),
             group.getGroupName(),
             group.getGroupDescription(), 
             group.getCreatedBy().getId(), 
             groupMembers);
 
+            //add the DTO to the list of dtos
             dtos.add(dto);
         }
 
+        //Finally we return the List
         return dtos;
     }
 }
