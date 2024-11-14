@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.familygroup.familygroup.exceptions.CustomException;
+import com.familygroup.familygroup.models.Group;
 import com.familygroup.familygroup.models.Role;
 import com.familygroup.familygroup.models.Users;
+import com.familygroup.familygroup.models.dtos.GroupDto;
 import com.familygroup.familygroup.models.dtos.UsersDto;
 import com.familygroup.familygroup.repositories.RoleRepository;
 import com.familygroup.familygroup.repositories.UserRepository;
@@ -64,7 +67,7 @@ public class UserService {
 
     }
 
-    public Users mapToUser(UsersDto dto) {
+    private Users mapToUser(UsersDto dto) {
 
         Users user = new Users();
 
@@ -75,7 +78,7 @@ public class UserService {
         return user;
     }
 
-    public UsersDto mapToDto(Users user) {
+    private UsersDto mapToDto(Users user) {
 
         UsersDto dto = new UsersDto(
             user.getId(),

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.familygroup.familygroup.exceptions.CustomException;
 import com.familygroup.familygroup.models.dtos.GroupDto;
 import com.familygroup.familygroup.services.GroupService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/groups")
@@ -28,6 +29,15 @@ public class GroupController {
         groupService.createGroup(dto);
 
         return ResponseEntity.ok("Group created!");
+    }
+
+    @GetMapping("/getGroupsByUser/{user_id}")
+    public ResponseEntity<List<GroupDto>> getGroupsByUser(@PathVariable("user_id") Long userId)
+    throws CustomException {
+
+        List<GroupDto> dtos = groupService.getGroupsByUser(userId);
+
+        return new ResponseEntity<>(dtos, HttpStatus.OK); 
     }
 
     @GetMapping("/getGroupById/{id}")

@@ -13,7 +13,9 @@ import com.familygroup.familygroup.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class GroupService {
@@ -41,6 +43,24 @@ public class GroupService {
 
         return mapToGroupDto(group);
     }
+
+    public List<GroupDto> getGroupsByUser(Long userId) throws CustomException {
+
+        boolean isUser = userRepository.existsById(userId);
+
+        if (isUser  == false) {
+            throw new CustomException("There's no user with the given id.");
+        }
+
+        List<Group> groups = groupRepository.getGroupsByUser(userId);
+
+        if (groups.isEmpty()) {
+            throw new CustomException("User's groups not found");
+        }
+
+        return mapToGroupsDto(groups);
+
+    } 
 
     //delete group by id
     @Transactional
@@ -116,5 +136,29 @@ public class GroupService {
         groupMembers);
 
         return dto;
+    }
+
+    private List<GroupDto> mapToGroupsDto(List<Group> groups) {
+
+        List<GroupDto> dtos = new ArrayList<>();
+
+        for (Group group : groups) {
+
+            Set<Long> groupMembers = new HashSet<>();
+            
+            for (Users member : group.getUsers()) {
+                groupMembers.add(member.getId());
+            }
+ 
+            GroupDto dto = new GroupDto(group.getId(),
+            group.getGroupName(),
+            group.getGroupDescription(), 
+            group.getCreatedBy().getId(), 
+            groupMembers);
+
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 }
