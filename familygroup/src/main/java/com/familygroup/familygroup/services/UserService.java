@@ -1,20 +1,17 @@
 package com.familygroup.familygroup.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.List;
 
 import com.familygroup.familygroup.exceptions.CustomException;
-import com.familygroup.familygroup.models.Group;
 import com.familygroup.familygroup.models.Role;
 import com.familygroup.familygroup.models.Users;
-import com.familygroup.familygroup.models.dtos.GroupDto;
 import com.familygroup.familygroup.models.dtos.UsersDto;
 import com.familygroup.familygroup.repositories.RoleRepository;
 import com.familygroup.familygroup.repositories.UserRepository;
-
 
 @Service
 public class UserService {
@@ -25,21 +22,37 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public void createUser(UsersDto  userDto) throws CustomException {
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
-            boolean isUser = userRepository.isUsername(userDto.username());
+    public void createUser(UsersDto userDto) throws CustomException {
 
-            if (isUser == true) {
-                throw new CustomException("Username's already in use.");
-            }
+        boolean isUser = userRepository.isUsername(userDto.username());
 
-            var user = mapToUser(userDto);
+        if (isUser == true) {
+            throw new CustomException("Username's already in use.");
+        }
 
-            Role role = roleRepository.findUserRoleByName();
-            user.setRoles(Arrays.asList(role));
-    
-            userRepository.save(user); 
-       
+        var user = mapToUser(userDto);
+
+        user.setPassword(encoder.encode(user.getPassword()));
+
+        Role role = roleRepository.findUserRoleByName();
+        user.setRoles(Arrays.asList(role));
+
+        userRepository.save(user);
+
+    }
+
+    public Long isUserValid(String username) throws CustomException {
+
+        Long isUser = userRepository.isValidUser(username);
+
+        if (isUser == null) {
+            throw new CustomException("Username is not valid.");
+        }
+
+        return isUser;
     }
 
     public UsersDto findUserByUsername(String username) throws CustomException {
@@ -47,7 +60,7 @@ public class UserService {
         Users user = userRepository.findUserByUsername(username);
 
         if (user == null) {
-            throw new CustomException("User not found");
+            throw new CustomException("User not found.");
         }
 
         UsersDto dto = mapToDto(user);
@@ -59,7 +72,7 @@ public class UserService {
 
         boolean isUser = userRepository.existsById(id);
 
-        if (isUser  == false) {
+        if (isUser == false) {
             throw new CustomException("There's no user with the given id.");
         }
 
@@ -73,7 +86,7 @@ public class UserService {
 
         user.setUsername(dto.username());
         user.setEmail(dto.email());
-        user.setPassword(dto.password());
+        user.setPassword(encoder.encode(dto.password()));
 
         return user;
     }
@@ -81,13 +94,12 @@ public class UserService {
     private UsersDto mapToDto(Users user) {
 
         UsersDto dto = new UsersDto(
-            user.getId(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getPassword()
-            );
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword());
 
         return dto;
     }
-    
+
 }
