@@ -1,5 +1,7 @@
 package com.familygroup.familygroup.models;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +13,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "role")
 @SequenceGenerator(sequenceName = "seq_role", name = "seq_role", initialValue = 1, allocationSize = 1)
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_role")
@@ -36,6 +38,9 @@ public class Role {
         this.roleDescription = roleDescription;
     }
 
-    
-    
+    @Override
+    public String getAuthority() {
+        return this.roleDescription;
+    }
+
 }
