@@ -17,5 +17,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     @Query(nativeQuery = true, value = "select exists(select 1 from users where username = ?1);")
     public boolean isUsername(String username);
-    
+
+    @Query(nativeQuery = true, value = "select (id) from users where username = ?1")
+    public Long isValidUser(String username);
 }
