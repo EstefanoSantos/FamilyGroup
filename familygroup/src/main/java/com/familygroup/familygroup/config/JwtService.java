@@ -25,15 +25,11 @@ public class JwtService {
         Instant instant = Instant.now();
         Long expires = 3600L;
 
-        String scopes = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
-
         var claims = JwtClaimsSet.builder()
                 .issuer("family-group")
                 .issuedAt(instant)
                 .expiresAt(instant.plusSeconds(expires))
-                .claim("scope", scopes)
+                .claim("user_id", authentication.getCredentials())
                 .build();
 
         String token = encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
