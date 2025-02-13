@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.familygroup.familygroup.exceptions.CustomException;
+import com.familygroup.familygroup.models.dtos.LoginRequest;
 import com.familygroup.familygroup.models.dtos.UsersDto;
+import com.familygroup.familygroup.services.AuthenticationService;
 import com.familygroup.familygroup.services.UserService;
 
 import jakarta.validation.Valid;
-
 
 @RestController()
 @RequestMapping("/user")
@@ -23,17 +24,28 @@ public class UserController {
 
     private UserService userService;
 
-    public UserController(UserService userService) {
+    private AuthenticationService authenticationService;
+
+    public UserController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
-   }
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping("/createUser")
-    public ResponseEntity<String> newUser(@RequestBody @Valid UsersDto dto) throws CustomException{
+    public ResponseEntity<String> newUser(@RequestBody @Valid UsersDto dto) throws CustomException {
 
         userService.createUser(dto);
 
         return new ResponseEntity<String>("User created!", HttpStatus.OK);
-  
+
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginRequest request) throws CustomException {
+
+        String token = authenticationService.authenticateUser(request);
+
+        return ResponseEntity.ok(token);
     }
 
     @GetMapping("/getUser/{username}")
@@ -50,6 +62,14 @@ public class UserController {
         userService.deleteUser(id);
 
         return ResponseEntity.ok("User succesfully deleted!");
+    }
+
+    @GetMapping("/isUserValid/{username}")
+    public ResponseEntity<Long> isUserValid(@PathVariable("username") String username) throws CustomException {
+
+        Long isUser = userService.isUserValid(username);
+
+        return new ResponseEntity<Long>(isUser, HttpStatus.OK);
     }
 
 }
