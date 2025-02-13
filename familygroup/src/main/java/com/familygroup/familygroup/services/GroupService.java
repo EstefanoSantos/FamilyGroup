@@ -26,105 +26,109 @@ public class GroupService {
     @Autowired
     private UserRepository userRepository;
 
-    //creates a new group
+    // creates a new group
     public void createGroup(GroupDto dto) throws CustomException {
 
-       Group group = mapToGroup(dto);
+        Group group = mapToGroup(dto);
 
-       groupRepository.save(group);
+        groupRepository.save(group);
     }
 
-    //Find a group by id
+    // Find a group by id
     public GroupDto getGroupById(Long id) throws CustomException {
 
-        //check if is a valid group
+        // check if is a valid group
         Group group = groupRepository.findById(id)
-        .orElseThrow(() -> new CustomException("Group cannot be found."));
+                .orElseThrow(() -> new CustomException("Group cannot be found."));
 
         return mapToGroupDto(group);
     }
 
-    //Get user's group
+    // Get user's group
     public List<GroupDto> getGroupsByUser(Long userId) throws CustomException {
 
-        //check if user exists
+        // check if user exists
         boolean isUser = userRepository.existsById(userId);
 
-        if (isUser  == false) {
+        if (isUser == false) {
             throw new CustomException("There's no user with the given id.");
         }
 
-        //Try to retrive data from groups table
+        // Try to retrive data from groups table
         List<Group> groups = groupRepository.getGroupsByUser(userId);
 
         if (groups.isEmpty()) {
             throw new CustomException("User's groups not found");
         }
 
-        //Maps a list of groups to groupsDto
+        // Maps a list of groups to groupsDto
         return mapToGroupsDto(groups);
 
-    } 
+    }
 
-    //delete group by id
+    // delete group by id
     @Transactional
     public void deleteGroupById(Long groupId, Long createdBy) throws CustomException {
 
-        //check if group exists and user own it
+        // check if group exists and user own it
         Group group = groupRepository.isGroupOwner(groupId, createdBy);
 
         if (group == null) {
             throw new CustomException("Group was not found.");
         }
 
-        //remove users from group before deleting it
+        // remove users from group before deleting it
         group.getUsers().forEach(user -> user.getGroups().remove(group));
 
         groupRepository.delete(group);
     }
 
-    //Maps Dto to Group class 
-    private Group mapToGroup(GroupDto dto) throws CustomException{
+    // Maps Dto to Group class
+    private Group mapToGroup(GroupDto dto) throws CustomException {
 
         Group group = new Group();
 
-            group.setGroupName(dto.groupName());
-            group.setGroupDescription(dto.groupDescription());
-        
-            //check if group creator user exists
-            Users creator = userRepository.findById(dto.createdBy())
-            .orElseThrow(() -> new CustomException("User not found with id " + dto.createdBy()));
+        group.setGroupName(dto.groupName());
+        group.setGroupDescription(dto.groupDescription());
 
-            //set user found in the field created_by as the group creator
-            group.setCreatedBy(creator);
+        // check if group creator user exists
+        Users creator = userRepository.findById(dto.createdBy())
+                .orElseThrow(() -> new CustomException("User not found with id " + dto.createdBy()));
 
-            //add group creator to Set of users in the group
-            group.getUsers().add(creator);
+        // set user found in the field created_by as the group creator
+        group.setCreatedBy(creator);
 
-            //add group to to Set of groups in user
-            creator.getGroups().add(group);
+        // add group creator to Set of users in the group
+        group.getUsers().add(creator);
 
-            /*gets each individual user that might be send in http post request
-             * and add to the group */
-            Set<Users> groupMembers = new HashSet<>();
+        // add group to to Set of groups in user
+        creator.getGroups().add(group);
 
-            for (Long memberId: dto.users()) {
+        /*
+         * gets each individual user that might be send in http post request
+         * and add to the group
+         */
+        Set<Users> groupMembers = new HashSet<>();
+
+        if (dto.users() != null) {
+            for (Long memberId : dto.users()) {
 
                 Users user = userRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException("User not found with id " + memberId));
+                        .orElseThrow(() -> new CustomException("User not found with id " + memberId));
 
                 groupMembers.add(user);
 
                 user.getGroups().add(group);
             }
+        }
 
-            group.setUsers(groupMembers);
+        group.setUsers(groupMembers);
 
-            return group;
+        return group;
 
     }
 
-    //map Group to GroupDto
+    // map Group to GroupDto
     private GroupDto mapToGroupDto(Group group) {
 
         Set<Long> groupMembers = new HashSet<>();
@@ -134,43 +138,43 @@ public class GroupService {
         }
 
         GroupDto dto = new GroupDto(group.getId(),
-        group.getGroupName(),
-        group.getGroupDescription(), 
-        group.getCreatedBy().getId(), 
-        groupMembers);
+                group.getGroupName(),
+                group.getGroupDescription(),
+                group.getCreatedBy().getId(),
+                groupMembers);
 
         return dto;
     }
 
-    //Receives a list of groups and maps to DTO objects
+    // Receives a list of groups and maps to DTO objects
     private List<GroupDto> mapToGroupsDto(List<Group> groups) {
 
         List<GroupDto> dtos = new ArrayList<>();
-        
-        //Iterates through each group and map it to GroupDto 
+
+        // Iterates through each group and map it to GroupDto
         for (Group group : groups) {
 
-            //Each group have a set of users that makes part of it
-            //Here we iterate through each user id and add it to the set
+            // Each group have a set of users that makes part of it
+            // Here we iterate through each user id and add it to the set
             Set<Long> groupMembers = new HashSet<>();
-            
+
             for (Users member : group.getUsers()) {
                 groupMembers.add(member.getId());
             }
-            
-            //Now we take group field and maps to Dto
-            //The set previously created is added to the dto set users attribute
-            GroupDto dto = new GroupDto(group.getId(),
-            group.getGroupName(),
-            group.getGroupDescription(), 
-            group.getCreatedBy().getId(), 
-            groupMembers);
 
-            //add the DTO to the list of dtos
+            // Now we take group field and maps to Dto
+            // The set previously created is added to the dto set users attribute
+            GroupDto dto = new GroupDto(group.getId(),
+                    group.getGroupName(),
+                    group.getGroupDescription(),
+                    group.getCreatedBy().getId(),
+                    groupMembers);
+
+            // add the DTO to the list of dtos
             dtos.add(dto);
         }
 
-        //Finally we return the List
+        // Finally we return the List
         return dtos;
     }
 }

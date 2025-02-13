@@ -33,16 +33,16 @@ public class GroupController {
 
     @GetMapping("/getGroupsByUser/{user_id}")
     public ResponseEntity<List<GroupDto>> getGroupsByUser(@PathVariable("user_id") Long userId)
-    throws CustomException {
+            throws CustomException {
 
-        List<GroupDto> dtos = groupService.getGroupsByUser(userId);
+        List<GroupDto> dtos = groupService.getGroupsByUser(id);
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK); 
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/getGroupById/{id}")
     public ResponseEntity<GroupDto> getGroupById(@PathVariable("id") Long id) throws CustomException {
-        
+
         GroupDto dto = groupService.getGroupById(id);
 
         return new ResponseEntity<GroupDto>(dto, HttpStatus.OK);
@@ -50,7 +50,7 @@ public class GroupController {
 
     @DeleteMapping("/deleteById/{groupId}/{created_by}")
     public ResponseEntity<String> deleteById(@PathVariable("groupId") Long groupId,
-     @PathVariable("created_by") Long createdBy) throws CustomException {
+            @PathVariable("created_by") Long createdBy) throws CustomException {
 
         groupService.deleteGroupById(groupId, createdBy);
 
