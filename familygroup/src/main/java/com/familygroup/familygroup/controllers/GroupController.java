@@ -35,7 +35,7 @@ public class GroupController {
     public ResponseEntity<List<GroupDto>> getGroupsByUser(@PathVariable("user_id") Long userId)
             throws CustomException {
 
-        List<GroupDto> dtos = groupService.getGroupsByUser(id);
+        List<GroupDto> dtos = groupService.getGroupsByUser(userId);
 
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
