@@ -1,12 +1,15 @@
 package com.familygroup.familygroup.models;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.familygroup.familygroup.models.dtos.LoginRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,12 +26,11 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "users")
 @SequenceGenerator(name = "seq_users", sequenceName = "seq_user", initialValue = 1, allocationSize = 1)
-public class Users implements Serializable {
+public class Users implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,24 +48,23 @@ public class Users implements Serializable {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"},
-    name = "unique_role_user"),
+    @JoinTable(name = "user_role", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id",
+            "role_id" }, name = "unique_role_user"),
 
-    joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", table = "users", unique = false,
-    foreignKey = @ForeignKey(name = "user_fk", value = ConstraintMode.CONSTRAINT)),
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", table = "users", unique = false, foreignKey = @ForeignKey(name = "user_fk", value = ConstraintMode.CONSTRAINT)),
 
-    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "role", unique = false,
-    foreignKey = @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT))
-    
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "role", unique = false, foreignKey = @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT))
+
     )
-    List<Role> roles = new ArrayList<>();
+    List<Role> roles;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "user_group",
-    joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id")
-    )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     Set<Group> groups = new HashSet<>();
 
+    public boolean isLoginCorrect(LoginRequest request, PasswordEncoder encoder) {
+        return encoder.matches(request.password(), this.password);
+    }
 
     @Override
     public int hashCode() {
@@ -138,6 +139,9 @@ public class Users implements Serializable {
         this.groups = groups;
     }
 
-    
-    
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles;
+    }
+
 }
