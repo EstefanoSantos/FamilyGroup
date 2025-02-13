@@ -1,18 +1,18 @@
 package com.familygroup.familygroup.models.dtos;
+
 import java.util.Set;
 
 public record GroupDto(
 
-    Long id,
+        Long id,
 
-    String groupName,
+        String groupName,
 
-    String groupDescription,
+        String groupDescription,
 
-    Long createdBy,
+        Long createdBy,
 
-    Set<Long> users
-    
+        Set<Long> users
+
 ) {
-    
 }

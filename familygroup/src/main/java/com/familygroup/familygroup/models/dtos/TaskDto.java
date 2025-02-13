@@ -2,27 +2,22 @@ package com.familygroup.familygroup.models.dtos;
 
 import java.time.OffsetDateTime;
 
-import com.familygroup.familygroup.models.Group;
-import com.familygroup.familygroup.models.Users;
-
 public record TaskDto(
 
-    Long id,
+        Long id,
 
-    String taskName,
+        String taskName,
 
-    String taskDescription,
+        String taskDescription,
 
-    OffsetDateTime creationTime,
+        OffsetDateTime creationTime,
 
-    OffsetDateTime finishedAt,
+        OffsetDateTime finishedAt,
 
-    Long userId,
+        Long userId,
 
-    Long groupId
+        Long groupId
 
 ) {
 
-} 
-
-
+}
