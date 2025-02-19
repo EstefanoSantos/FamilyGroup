@@ -33,9 +33,12 @@ public class UserService {
             throw new CustomException("Username's already in use.");
         }
 
+        String password = userDto.password();
+        System.out.println(password);
+
         var user = mapToUser(userDto);
 
-        user.setPassword(encoder.encode(user.getPassword()));
+        user.setPassword(encoder.encode(password));
 
         Role role = roleRepository.findUserRoleByName();
         user.setRoles(Arrays.asList(role));
