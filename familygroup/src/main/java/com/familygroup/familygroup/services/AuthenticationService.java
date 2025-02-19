@@ -2,7 +2,6 @@ package com.familygroup.familygroup.services;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.familygroup.familygroup.config.JwtService;
@@ -32,7 +31,7 @@ public class AuthenticationService {
 
         Users user = userRepository.findUserByUsername(request.username());
 
-        if (user == null || user.isLoginCorrect(request, encoder)) {
+        if (user == null || !user.isLoginCorrect(request, encoder)) {
             throw new CustomException("Username or password invalid");
         }
 
