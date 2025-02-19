@@ -38,7 +38,7 @@ public class WebConfigSecurity {
     private RSAPrivateKey privateKey;;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -46,6 +46,9 @@ public class WebConfigSecurity {
                         auth -> auth
                                 .requestMatchers("/user/auth").permitAll()
                                 .requestMatchers("/user/createUser").permitAll()
+                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
+                                        "/v3/api-docs/**", "/v3/api-docs.yaml")
+                                .permitAll()
                                 .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer(
