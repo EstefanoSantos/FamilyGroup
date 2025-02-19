@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.familygroup.familygroup.exceptions.CustomException;
 import com.familygroup.familygroup.models.dtos.GroupDto;
 import com.familygroup.familygroup.services.GroupService;
+
+import io.swagger.v3.oas.annotations.Operation;
+
 import java.util.List;
 
 @RestController
@@ -23,6 +26,7 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
+    @Operation(summary = "Create new group", method = "POST")
     @PostMapping("/createGroup")
     public ResponseEntity<String> createGroup(@RequestBody GroupDto dto) throws CustomException {
 
@@ -31,6 +35,7 @@ public class GroupController {
         return ResponseEntity.ok("Group created!");
     }
 
+    @Operation(summary = "Find groups relateds to user", method = "GET")
     @GetMapping("/getGroupsByUser/{user_id}")
     public ResponseEntity<List<GroupDto>> getGroupsByUser(@PathVariable("user_id") Long userId)
             throws CustomException {
@@ -40,6 +45,7 @@ public class GroupController {
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "Search for a specific group", method = "GET")
     @GetMapping("/getGroupById/{id}")
     public ResponseEntity<GroupDto> getGroupById(@PathVariable("id") Long id) throws CustomException {
 
@@ -48,6 +54,7 @@ public class GroupController {
         return new ResponseEntity<GroupDto>(dto, HttpStatus.OK);
     }
 
+    @Operation(summary = "Delete a specific group")
     @DeleteMapping("/deleteById/{groupId}/{created_by}")
     public ResponseEntity<String> deleteById(@PathVariable("groupId") Long groupId,
             @PathVariable("created_by") Long createdBy) throws CustomException {
